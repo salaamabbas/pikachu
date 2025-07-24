@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Pikachu: Unlock Your Surprise</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="screen active">
+        <div class="floating-elements">
+            <div class="leaf leaf1">🍃</div>
+            <div class="leaf leaf2">🍃</div>
+            <div class="leaf leaf3">🍃</div>
+            <div class="heart heart1">💚</div>
+            <div class="heart heart2">💖</div>
+            <div class="heart heart3">💚</div>
+        </div>
+        <div class="welcome-content">
+            <h1 class="title">Mission Pikachu</h1>
+            <h2 class="subtitle">Unlock Your Surprise</h2>
+            <div class="pikachu-icon">⚡</div>
+            <p class="welcome-text">Complete 3 missions to unlock a special surprise for Mummy Lubnah!</p>
+            <button id="start-btn" class="start-button">Start Mission 🚀</button>
+        </div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quiz-screen" class="screen">
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        <div class="keys-container">
+            <div class="key key1">🗝️</div>
+            <div class="key key2">🗝️</div>
+            <div class="key key3">🗝️</div>
+        </div>
+        
+        <div class="quiz-content">
+            <div class="memory-photo-container">
+                <div class="memory-photo tilt-card" id="memory-photo">
+                    <img src="" alt="Memory Photo" id="memory-img">
+                    <div class="photo-overlay">
+                        <span class="photo-caption" id="photo-caption"></span>
+                    </div>
+                </div>
+            </div>
+            <h2 id="mission-title" class="mission-title"></h2>
+            <p id="question-text" class="question"></p>
+            <div id="options-container" class="options-container"></div>
+            <div id="feedback" class="feedback"></div>
+            <button id="next-btn" class="next-button" style="display: none;">Next Mission ➡️</button>
+        </div>
+    </div>
+
+    <!-- Love Letter Screen -->
+    <div id="letter-screen" class="screen">
+        <div class="floating-petals">
+            <div class="petal petal1">🌸</div>
+            <div class="petal petal2">🌸</div>
+            <div class="petal petal3">🌸</div>
+            <div class="petal petal4">🍃</div>
+            <div class="petal petal5">🌸</div>
+            <div class="petal petal6">🍃</div>
+        </div>
+        
+        <div class="letter-content">
+            <div class="music-controls">
+                <div class="music-card tilt-card">
+                    <div class="album-cover">
+                        <div class="vinyl-record">
+                            <div class="vinyl-center"></div>
+                        </div>
+                    </div>
+                    <button id="play-music" class="music-btn">🎵 Play "Ordinary" by Alex Warren 🎵</button>
+                    <div class="music-note">🎵</div>
+                </div>
+                <!-- Background Music Audio -->
+                <audio id="background-music" loop preload="auto">
+                    <source src="./ordinary-alex-warren.mp3" type="audio/mp3">
+                    <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav" type="audio/wav">
+                    <!-- Add your music file as ordinary-alex-warren.mp3 -->
+                </audio>
+            </div>
+            
+            <div class="love-letter tilt-card">
+                <div class="letter-header">💌 For My Dearest Mummy Lubnah 💌</div>
+                <div class="letter-body">
+                    <p class="opening">My Absolutely GORGEOUS Pikachu Leilah,</p>
+                    
+                    <p>Where do I even BEGIN?! 😍 Every single day with you feels like I've won the lottery, found a unicorn, and discovered the secret to happiness all at once!</p>
+                    
+                    <p>Your legendary weird laughter? It's not just cute - it's MAGICAL! 🤣✨ I swear it has healing powers because every time I hear it, all my worries disappear and my heart does this little happy dance!</p>
+                    
+                    <p>And can we talk about how you're literally a MATH GENIUS?! 🧠⚡ You make calculus look amazing (yes, AMAZING!), and watching you solve problems is like watching poetry in motion. Lubnah is getting the most brilliant, beautiful tutor in the universe!</p>
+                    
+                    <p>That BSK swimming pool moment? 🏊‍♀️😂 ICONIC! LEGENDARY! It's going in the Pikachu Hall of Fame! You turned what could have been embarrassing into the most adorable memory ever. That's your superpower - making everything beautiful!</p>
+                    
+                    <p>You didn't just steal my heart, babe - you CONQUERED it, planted your flag, and declared it the Kingdom of Lubnah! 💖👑 Every beat spells out your name, every breath whispers how much I adore you!</p>
+                    
+                    <p>This quiz? It's just a tiny glimpse into how OBSESSED I am with every little thing about you. Your laugh, your brilliance, your adorable clumsiness, your beautiful heart - I notice EVERYTHING because you're my whole world! 🌍💚</p>
+                    
+                    <p class="romantic-highlight">I love you more than Pikachu loves ketchup, more than lightning loves thunder, more than the ocean loves the shore. You're my forever and always, my beautiful chaos, my perfect imperfection! 💚⚡✨</p>
+                    
+                    <p class="signature">Forever yours (and I mean FOREVER!),<br>
+                    Your completely smitten Pikachu Salaam<br>
+                    💚⚡💖🥰💚</p>
+                    
+                    <p class="ps">P.S. - Yes, I'm this cheesy for you and I'm not even sorry! 🧀😂</p>
+                </div>
+            </div>
+            
+
+            
+            <div class="letter-actions">
+                <button id="hug-btn" class="hug-button">Tap for your Pikachu Hug 🤗💚</button>
+                <p class="hug-hint">Ready for the most adorable surprise ever? 😍</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Hug Screen -->
+    <div id="hug-screen" class="screen">
+        <div class="confetti-container">
+            <div class="confetti">💚</div>
+            <div class="confetti">💖</div>
+            <div class="confetti">🍃</div>
+            <div class="confetti">💚</div>
+            <div class="confetti">💖</div>
+            <div class="confetti">🍃</div>
+            <div class="confetti">💚</div>
+            <div class="confetti">💖</div>
+        </div>
+        
+        <div class="hug-content">
+            <div class="pikachu-hug">
+                <div class="pikachu-face">
+                    <div class="pikachu-body">⚡</div>
+                    <div class="hug-arms">🤗</div>
+                    <div class="pikachu-cheeks">
+                        <div class="cheek left">😊</div>
+                        <div class="cheek right">😊</div>
+                    </div>
+                </div>
+            </div>
+            <div class="final-messages">
+                <h1 class="final-message main">I love you SO MUCH, Mummy Lubnah! 💖⚡</h1>
+                <p class="final-message sub">You're my everything, my forever Pikachu! 💚</p>
+                <div class="love-stats">
+                    <div class="stat">
+                        <span class="stat-number" id="love-counter">∞</span>
+                        <span class="stat-label">Times I Love You</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Hours I Think of You</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Happiness Level</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hearts-rain">
+                <div class="heart-rain">💚</div>
+                <div class="heart-rain">💖</div>
+                <div class="heart-rain">⚡</div>
+                <div class="heart-rain">💚</div>
+                <div class="heart-rain">💖</div>
+                <div class="heart-rain">⚡</div>
+                <div class="heart-rain">💚</div>
+                <div class="heart-rain">💖</div>
+            </div>
+            <audio id="giggle-sound">
+                <!-- Giggle sound would be added here -->
+            </audio>
+            
+            <div class="final-actions">
+                <button id="restart-btn" class="restart-button">Experience This Magic Again! 🎆</button>
+                <p class="final-note">Because some moments are worth reliving forever 💚</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
