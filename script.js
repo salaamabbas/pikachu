@@ -1,3 +1,6 @@
+// Test if script is loading
+console.log('🚀 SCRIPT LOADED - Mission Pikachu starting!');
+
 // Quiz data - Using real photos!
 const quizData = [
     {
@@ -29,6 +32,16 @@ const quizData = [
         photo: "./pool.jpg", // Your photo from BSK swimming pool
         caption: "The legendary BSK swimming pool adventure! 🏊‍♀️😅",
         wrongFeedback: "Really? We both know who the pool adventure star was! 😂💦"
+    },
+    {
+        mission: "Mission 4",
+        question: "Who is the one and only Kagujje? 👑💕",
+        options: ["Pikachu Leilah", "Pikachu Salaam", "Both are Kagujjes"],
+        correct: 1,
+        feedback: "💖 Absolutely right! Salaam is THE Kagujje - your king, your heart, your everything! The one who loves you beyond words and dreams of forever with his beautiful Pikachu! 👑✨",
+        photo: "./laughter.jpg", // Using existing photo as placeholder
+        caption: "The Kagujje who adores his Pikachu Queen! 👑💕",
+        wrongFeedback: "My love, there's only ONE Kagujje in this world, and he's completely crazy about you! 😘👑"
     }
 ];
 
@@ -36,32 +49,37 @@ const quizData = [
 let currentMission = 0;
 let completedMissions = 0;
 
-// DOM elements
-const screens = {
-    welcome: document.getElementById('welcome-screen'),
-    quiz: document.getElementById('quiz-screen'),
-    letter: document.getElementById('letter-screen'),
-    hug: document.getElementById('hug-screen')
-};
-
-const elements = {
-    startBtn: document.getElementById('start-btn'),
-    missionTitle: document.getElementById('mission-title'),
-    questionText: document.getElementById('question-text'),
-    optionsContainer: document.getElementById('options-container'),
-    feedback: document.getElementById('feedback'),
-    nextBtn: document.getElementById('next-btn'),
-    progressFill: document.querySelector('.progress-fill'),
-    keys: document.querySelectorAll('.key'),
-    playMusicBtn: document.getElementById('play-music'),
-    backgroundMusic: document.getElementById('background-music'),
-    hugBtn: document.getElementById('hug-btn'),
-    giggleSound: document.getElementById('giggle-sound'),
-    restartBtn: document.getElementById('restart-btn')
-};
+// DOM elements - will be initialized after DOM loads
+let screens = {};
+let elements = {};
 
 // Initialize the app
 function init() {
+    // Initialize DOM elements
+    screens = {
+        welcome: document.getElementById('welcome-screen'),
+        quiz: document.getElementById('quiz-screen'),
+        letter: document.getElementById('letter-screen'),
+        hug: document.getElementById('hug-screen')
+    };
+
+    elements = {
+        startBtn: document.getElementById('start-btn'),
+        missionTitle: document.getElementById('mission-title'),
+        questionText: document.getElementById('question-text'),
+        optionsContainer: document.getElementById('options-container'),
+        feedback: document.getElementById('feedback'),
+        nextBtn: document.getElementById('next-btn'),
+        progressFill: document.querySelector('.progress-fill'),
+        keys: document.querySelectorAll('.key'),
+        playMusicBtn: document.getElementById('play-music'),
+        backgroundMusic: document.getElementById('background-music'),
+        hugBtn: document.getElementById('hug-btn'),
+        giggleSound: document.getElementById('giggle-sound'),
+        restartBtn: document.getElementById('restart-btn')
+    };
+    
+    // Add event listeners
     elements.startBtn.addEventListener('click', startQuiz);
     elements.nextBtn.addEventListener('click', nextMission);
     elements.playMusicBtn.addEventListener('click', toggleMusic);
@@ -113,7 +131,16 @@ function startQuiz() {
 
 // Load current mission
 function loadMission() {
+    console.log('Loading mission:', currentMission, 'Total missions:', quizData.length);
+    
+    if (currentMission >= quizData.length) {
+        console.log('All missions completed, showing letter');
+        showScreen('letter');
+        return;
+    }
+    
     const mission = quizData[currentMission];
+    console.log('Mission data:', mission);
     elements.missionTitle.textContent = mission.mission;
     elements.questionText.textContent = mission.question;
     
@@ -160,30 +187,38 @@ function loadMission() {
 
 // Handle option selection
 function selectOption(selectedIndex) {
+    console.log('selectOption called with index:', selectedIndex, 'current mission:', currentMission);
     const mission = quizData[currentMission];
+    console.log('Current mission data:', mission);
     const buttons = document.querySelectorAll('.option-btn');
     
     // Disable all buttons
     buttons.forEach(btn => btn.style.pointerEvents = 'none');
     
     if (selectedIndex === mission.correct) {
+        console.log('Correct answer selected!');
         // Correct answer
         buttons[selectedIndex].classList.add('correct');
         elements.feedback.textContent = mission.feedback;
         elements.feedback.classList.add('show');
         
         // Unlock key animation
-        elements.keys[currentMission].classList.add('unlocked');
+        if (elements.keys[currentMission]) {
+            elements.keys[currentMission].classList.add('unlocked');
+        }
         completedMissions++;
+        console.log('Completed missions:', completedMissions);
         
         // Show next button or finish
         setTimeout(() => {
+            elements.nextBtn.style.display = 'block';
             if (currentMission < quizData.length - 1) {
-                elements.nextBtn.style.display = 'block';
+                console.log('Setting up next mission button');
                 elements.nextBtn.textContent = 'Next Mission ➡️';
+                elements.nextBtn.onclick = nextMission;
             } else {
+                console.log('All missions completed, setting up letter button');
                 // All missions completed, show continue to letter button
-                elements.nextBtn.style.display = 'block';
                 elements.nextBtn.textContent = 'Open Your Love Letter 💌';
                 elements.nextBtn.onclick = () => showScreen('letter');
             }
@@ -212,11 +247,16 @@ function selectOption(selectedIndex) {
 
 // Move to next mission
 function nextMission() {
+    console.log('nextMission called, current mission:', currentMission);
     if (currentMission < quizData.length - 1) {
         currentMission++;
+        console.log('Moving to mission:', currentMission);
         loadMission();
         // Reset the next button onclick to default
         elements.nextBtn.onclick = nextMission;
+    } else {
+        console.log('All missions completed, should show letter');
+        showScreen('letter');
     }
 }
 
@@ -224,17 +264,24 @@ function nextMission() {
 function toggleMusic() {
     const vinylRecord = document.querySelector('.vinyl-record');
     
+    if (!elements.backgroundMusic) {
+        console.log('Background music element not found');
+        return;
+    }
+    
     if (elements.backgroundMusic.paused) {
-        elements.backgroundMusic.play().catch(e => {
-            console.log('Music autoplay blocked by browser');
-            elements.playMusicBtn.textContent = '🎵 Music blocked by browser - click to enable';
+        elements.backgroundMusic.play().then(() => {
+            console.log('Music started successfully');
+            elements.playMusicBtn.textContent = '🎵 Now Playing: "Ordinary" by Alex Warren';
+            if (vinylRecord) vinylRecord.style.animationPlayState = 'running';
+        }).catch(e => {
+            console.log('Music play failed:', e);
+            elements.playMusicBtn.textContent = '🎵 Click to enable music 🎵';
         });
-        elements.playMusicBtn.textContent = '🎵 Now Playing: "Ordinary" by Alex Warren';
-        vinylRecord.style.animationPlayState = 'running';
     } else {
         elements.backgroundMusic.pause();
-        elements.playMusicBtn.textContent = '🎵 Play "Ordinary" by Alex Warren';
-        vinylRecord.style.animationPlayState = 'paused';
+        elements.playMusicBtn.textContent = '🎵 Play "Ordinary" by Alex Warren 🎵';
+        if (vinylRecord) vinylRecord.style.animationPlayState = 'paused';
     }
 }
 
@@ -332,24 +379,58 @@ function animateLoveCounter() {
     }, 10000);
 }
 
+// Global audio context for better performance
+let globalAudioContext = null;
+
+// Initialize audio context
+function initAudioContext() {
+    if (!globalAudioContext) {
+        try {
+            globalAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            console.log('Audio context initialized');
+        } catch (error) {
+            console.log('Audio context initialization failed:', error);
+        }
+    }
+    
+    if (globalAudioContext && globalAudioContext.state === 'suspended') {
+        globalAudioContext.resume().then(() => {
+            console.log('Audio context resumed');
+        });
+    }
+}
+
 // Add some interactive sound effects
 function playClickSound() {
-    // Create a simple beep sound using Web Audio API
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.frequency.value = 800;
-    oscillator.type = 'sine';
-    
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-    
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.1);
+    try {
+        if (!globalAudioContext) {
+            initAudioContext();
+        }
+        
+        if (!globalAudioContext || globalAudioContext.state !== 'running') {
+            console.log('Audio context not ready');
+            return;
+        }
+        
+        const oscillator = globalAudioContext.createOscillator();
+        const gainNode = globalAudioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(globalAudioContext.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.1, globalAudioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, globalAudioContext.currentTime + 0.1);
+        
+        oscillator.start(globalAudioContext.currentTime);
+        oscillator.stop(globalAudioContext.currentTime + 0.1);
+        
+        console.log('Click sound played');
+    } catch (error) {
+        console.log('Click sound failed:', error);
+    }
 }
 
 // Add touch support for mobile
@@ -402,161 +483,52 @@ document.addEventListener('touchend', (event) => {
     lastTouchEnd = now;
 }, false);
 
-// Start Quiz Function
-function startQuiz() {
-    showScreen('quiz');
-}
 
-// Load Mission Function
-function loadMission(missionIndex) {
-    if (missionIndex >= quizData.length) {
-        showScreen('letter');
-        return;
-    }
-    
-    const mission = quizData[missionIndex];
-    
-    // Update mission content
-    elements.missionTitle.textContent = mission.mission;
-    elements.questionText.textContent = mission.question;
-    
-    // Update memory photo with error handling
-    const memoryImg = document.getElementById('memory-img');
-    const photoCaption = document.getElementById('photo-caption');
-    
-    // Add error handling for photos
-    memoryImg.onerror = function() {
-        // Fallback to placeholder if photo doesn't load
-        const fallbackPhotos = {
-            'laughter.jpg': 'https://via.placeholder.com/300x200/FFD3E1/2D5A3D?text=Mummy+Lubnah+Laughing+💚',
-            'math.jpg': 'https://via.placeholder.com/300x200/A8E6CF/D63384?text=Math+Pikachu+Pro+⚡',
-            'pool.jpg': 'https://via.placeholder.com/300x200/87CEEB/FF6B9D?text=BSK+Pool+Memory+🏊‍♀️'
-        };
-        const photoName = mission.photo.split('./')[1];
-        this.src = fallbackPhotos[photoName] || 'https://via.placeholder.com/300x200/FFD3E1/A8E6CF?text=Beautiful+Memory+💚';
-    };
-    
-    memoryImg.src = mission.photo;
-    photoCaption.textContent = mission.caption;
-    
-    // Create option buttons
-    elements.optionsContainer.innerHTML = '';
-    mission.options.forEach((option, index) => {
-        const button = document.createElement('button');
-        button.className = 'option-btn';
-        button.textContent = option;
-        button.onclick = () => selectOption(index);
-        elements.optionsContainer.appendChild(button);
-    });
-    
-    // Reset feedback and next button
-    elements.feedback.classList.remove('show');
-    elements.nextBtn.style.display = 'none';
-    
-    // Update progress
-    updateProgress();
-}
-
-// Select Option Function
-function selectOption(selectedIndex) {
-    const mission = quizData[currentMission];
-    const isCorrect = selectedIndex === mission.correct;
-    
-    // Disable all option buttons
-    const optionBtns = document.querySelectorAll('.option-btn');
-    optionBtns.forEach(btn => btn.disabled = true);
-    
-    // Show feedback
-    elements.feedback.textContent = isCorrect ? mission.feedback : mission.wrongFeedback;
-    elements.feedback.classList.add('show');
-    
-    if (isCorrect) {
-        // Unlock key
-        const key = elements.keys[currentMission];
-        if (key) key.classList.add('unlocked');
-        
-        completedMissions++;
-        
-        // Show next button
-        elements.nextBtn.style.display = 'block';
-        
-        if (currentMission < quizData.length - 1) {
-            elements.nextBtn.textContent = 'Next Mission ➡️';
-            elements.nextBtn.onclick = nextMission;
-        } else {
-            elements.nextBtn.textContent = 'Open Your Love Letter 💌';
-            elements.nextBtn.onclick = () => showScreen('letter');
-        }
-    } else {
-        // Show try again option
-        setTimeout(() => {
-            optionBtns.forEach(btn => btn.disabled = false);
-            elements.feedback.classList.remove('show');
-        }, 2000);
-    }
-}
-
-// Next Mission Function
-function nextMission() {
-    currentMission++;
-    loadMission(currentMission);
-}
-
-// Update Progress Function
-function updateProgress() {
-    const progress = (completedMissions / quizData.length) * 100;
-    elements.progressFill.style.width = progress + '%';
-}
-
-// Toggle Music Function
-function toggleMusic() {
-    const music = elements.backgroundMusic;
-    const playBtn = elements.playMusicBtn;
-    const vinylRecord = document.querySelector('.vinyl-record');
-    
-    if (music.paused) {
-        music.play();
-        playBtn.textContent = '🎵 Playing "Ordinary" by Alex Warren 🎵';
-        if (vinylRecord) {
-            vinylRecord.style.animationPlayState = 'running';
-        }
-    } else {
-        music.pause();
-        playBtn.textContent = '🎵 Play "Ordinary" by Alex Warren 🎵';
-        if (vinylRecord) {
-            vinylRecord.style.animationPlayState = 'paused';
-        }
-    }
-}
-
-// Show Hug Screen Function
-function showHugScreen() {
-    showScreen('hug');
-    // Add any hug screen specific functionality here
-}
-
-// Show Screen Function
-function showScreen(screenName) {
-    // Remove active class from all screens
-    Object.values(screens).forEach(screen => {
-        if (screen) screen.classList.remove('active');
-    });
-    
-    // Add active class to target screen
-    if (screens[screenName]) {
-        screens[screenName].classList.add('active');
-    }
-}
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing app...');
     init(); // Call the init function
+    
+    // Start with mission 0
+    currentMission = 0;
+    completedMissions = 0;
+    
+    console.log('Total quiz data length:', quizData.length);
+    console.log('Quiz data:', quizData);
+    console.log('Loading mission:', currentMission);
+    
+    // Check if elements are properly initialized
+    console.log('Elements check:', {
+        missionTitle: !!elements.missionTitle,
+        questionText: !!elements.questionText,
+        optionsContainer: !!elements.optionsContainer,
+        feedback: !!elements.feedback,
+        nextBtn: !!elements.nextBtn,
+        keys: elements.keys ? elements.keys.length : 0
+    });
+    
     loadMission(currentMission);
+    
+    // Initialize audio context on first user interaction
+    const initAudio = () => {
+        initAudioContext();
+        console.log('Audio initialized on user interaction');
+    };
     
     // Add click sounds to all buttons
     document.addEventListener('click', (e) => {
+        initAudio();
         if (e.target.tagName === 'BUTTON') {
-            playClickSound();
+            setTimeout(() => playClickSound(), 100);
+        }
+    });
+    
+    // Also add touch events for mobile
+    document.addEventListener('touchstart', (e) => {
+        initAudio();
+        if (e.target.tagName === 'BUTTON') {
+            setTimeout(() => playClickSound(), 100);
         }
     });
     
@@ -567,10 +539,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (backgroundMusic) {
         // Set volume to a comfortable level
         backgroundMusic.volume = 0.3;
+        backgroundMusic.loop = true;
         
         // Function to start music
         const startMusic = () => {
-            if (!musicStarted) {
+            if (!musicStarted && backgroundMusic) {
                 backgroundMusic.play().then(() => {
                     musicStarted = true;
                     console.log('Background music started!');
@@ -581,6 +554,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (vinylRecord) vinylRecord.style.animationPlayState = 'running';
                 }).catch(e => {
                     console.log('Music play failed:', e);
+                    const playBtn = elements.playMusicBtn;
+                    if (playBtn) playBtn.textContent = '🎵 Click to Play Music 🎵';
                 });
             }
         };
@@ -590,9 +565,13 @@ document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('touchstart', startMusic, { once: true });
         document.addEventListener('keydown', startMusic, { once: true });
         
-        // Try auto-play (will likely fail but worth trying)
-        backgroundMusic.play().catch(() => {
-            console.log('Auto-play blocked. Music will start on first user interaction.');
-        });
+        // Also try when the play button is clicked
+        if (elements.playMusicBtn) {
+            elements.playMusicBtn.addEventListener('click', startMusic);
+        }
+        
+        console.log('Music setup complete');
+    } else {
+        console.log('Background music element not found');
     }
 });

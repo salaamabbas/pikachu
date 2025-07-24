@@ -71,6 +71,20 @@ body {
     50% { transform: translateY(-20px) rotate(10deg); }
 }
 
+@keyframes feedbackPulse {
+    0% { 
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+    }
+    50% {
+        transform: scale(1.05) translateY(-5px);
+    }
+    100% { 
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
 .welcome-content {
     text-align: center;
     padding: 2rem;
@@ -352,19 +366,24 @@ body {
     font-size: 1.2rem;
     font-weight: 600;
     margin: 1.5rem 0;
-    padding: 1.2rem;
-    border-radius: 15px;
-    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem 1.5rem;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(255, 229, 241, 0.95) 0%, rgba(232, 245, 232, 0.95) 100%);
     color: #2d5a3d;
     opacity: 0;
     transform: translateY(20px);
     transition: all 0.5s ease;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    border: 2px solid rgba(168, 230, 207, 0.5);
-    line-height: 1.6;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+    border: 3px solid #FF69B4;
+    line-height: 1.8;
     text-align: center;
     max-width: 100%;
+    min-height: 120px;
     word-wrap: break-word;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 }
 
 .feedback.show {
@@ -383,7 +402,7 @@ body {
     border-radius: 25px;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin: 2rem auto 1rem;
+    margin: 2rem auto 6rem;
     box-shadow: 0 8px 20px rgba(255, 107, 157, 0.3);
     display: block;
     min-width: 200px;
@@ -394,24 +413,6 @@ body {
     transform: translateY(-3px);
     box-shadow: 0 12px 30px rgba(255, 107, 157, 0.4);
     background: linear-gradient(135deg, #ff5a8a, #95d9b8);
-}
-
-.next-button {
-    background: linear-gradient(45deg, #28a745, #20c997);
-    border: none;
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: white;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Quicksand', sans-serif;
-}
-
-.next-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
 }
 
 /* Letter Screen Styles */
@@ -1051,10 +1052,18 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    body {
+        font-size: 14px;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+    }
+    
     .screen {
-        padding: 1rem;
-        height: 100vh;
+        min-height: 100vh;
+        padding-bottom: 4rem;
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
     
     #welcome-screen {
@@ -1067,16 +1076,23 @@ body {
     }
     
     .feedback {
-        font-size: 1.1rem;
-        padding: 1rem;
-        margin: 1rem 0 1.5rem;
-        line-height: 1.5;
+        font-size: 1.2rem;
+        padding: 1.2rem;
+        margin: 1.5rem 0.5rem 2rem;
+        line-height: 1.6;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        max-width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+        animation: feedbackPulse 0.6s ease-out;
     }
     
     .next-button {
         padding: 16px 30px;
         font-size: 1.1rem;
-        margin: 1.5rem auto 1rem;
+        margin: 1.5rem auto 3.5rem;
         min-width: 180px;
     }
     
@@ -1102,7 +1118,13 @@ body {
     .memory-photo {
         width: 280px;
         height: 180px;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .quiz-content {
+        padding: 1rem;
+        max-width: 100%;
+        margin: 0 auto;
     }
     
     .options-container {
@@ -1239,15 +1261,63 @@ body {
     }
     
     .feedback {
-        font-size: 1rem;
-        padding: 0.7rem;
-        margin: 0.8rem 0.3rem;
-        line-height: 1.4;
+        font-size: 1.1rem;
+        padding: 1.5rem 1rem;
+        margin: 1rem 0.3rem 2rem;
+        line-height: 1.6;
+        border-radius: 20px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        background: linear-gradient(135deg, #FFE5F1 0%, #E8F5E8 100%);
+        border: 3px solid #FF69B4;
+        min-height: 100px;
+        max-height: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        transform: translateY(0);
+        transition: all 0.3s ease;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+    }
+    
+    .feedback.show {
+        animation: feedbackPulse 0.6s ease-out;
+        transform: translateY(-5px);
+    }
+    
+    @keyframes feedbackPulse {
+        0% {
+            transform: translateY(10px) scale(0.95);
+            opacity: 0;
+        }
+        50% {
+            transform: translateY(-2px) scale(1.02);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(-5px) scale(1);
+            opacity: 1;
+        }
     }
     
     .next-button {
         padding: 0.7rem 1.2rem;
         font-size: 0.95rem;
+        margin: 1.2rem auto 5rem;
+        border-radius: 25px;
+        box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+        animation: buttonGlow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes buttonGlow {
+        0% {
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+        }
+        100% {
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.5);
+        }
     }
     
     .love-letter {

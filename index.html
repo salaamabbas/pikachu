@@ -22,7 +22,7 @@
             <h1 class="title">Mission Pikachu</h1>
             <h2 class="subtitle">Unlock Your Surprise</h2>
             <div class="pikachu-icon">⚡</div>
-            <p class="welcome-text">Complete 3 missions to unlock a special surprise for Mummy Lubnah!</p>
+            <p class="welcome-text">Complete 4 missions to unlock a special surprise for Mummy Lubnah!</p>
             <button id="start-btn" class="start-button">Start Mission 🚀</button>
         </div>
     </div>
@@ -36,6 +36,7 @@
             <div class="key key1">🗝️</div>
             <div class="key key2">🗝️</div>
             <div class="key key3">🗝️</div>
+            <div class="key key4">🗝️</div>
         </div>
         
         <div class="quiz-content">
@@ -97,6 +98,8 @@
                     <p>And can we talk about how you're literally a MATH GENIUS?! 🧠⚡ You make calculus look amazing (yes, AMAZING!), and watching you solve problems is like watching poetry in motion. Lubnah is getting the most brilliant, beautiful tutor in the universe!</p>
                     
                     <p>That BSK swimming pool moment? 🏊‍♀️😂 ICONIC! LEGENDARY! It's going in the Pikachu Hall of Fame! You turned what could have been embarrassing into the most adorable memory ever. That's your superpower - making everything beautiful!</p>
+                    
+                    <p>You know what's crazy? I asked Allah for a queen, but instead He blessed me with an angel! 😇✨ An Indian angel whose gorgeous hair tells the most beautiful story - those waves and that shine! (Though daddy's Lubnah has some serious competition with those amazing waves too, haha! 😄💁‍♀️)</p>
                     
                     <p>You didn't just steal my heart, babe - you CONQUERED it, planted your flag, and declared it the Kingdom of Lubnah! 💖👑 Every beat spells out your name, every breath whispers how much I adore you!</p>
                     
@@ -177,6 +180,14 @@
                 <!-- Giggle sound would be added here -->
             </audio>
             
+            <!-- Background Music -->
+            <audio id="background-music" loop preload="auto" autoplay>
+                <source src="./ordinary.mp3" type="audio/mpeg">
+                <source src="./ordinary.ogg" type="audio/ogg">
+                <!-- Fallback for browsers that don't support audio -->
+                Your browser does not support the audio element.
+            </audio>
+            
             <div class="final-actions">
                 <button id="restart-btn" class="restart-button">Experience This Magic Again! 🎆</button>
                 <p class="final-note">Because some moments are worth reliving forever 💚</p>
@@ -184,6 +195,604 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+// Mission Pikachu - Complete Script
+console.log('🚀 SCRIPT LOADED - Mission Pikachu starting!');
+
+// Quiz data - Using real photos!
+const quizData = [
+    {
+        mission: "Mission 1",
+        question: "Who has the weirdest laughter?",
+        options: ["Pikachu Salaam", "Pikachu Leilah", "Both"],
+        correct: 1,
+        feedback: "🤣 Correct! Nothing beats your weird Pikachu laughter, Mummy Lubnah!",
+        photo: "./laughter.jpg",
+        caption: "That infectious Pikachu laughter we all love! 😂",
+        wrongFeedback: "Try again! We both know whose laugh is the most adorable! 😘"
+    },
+    {
+        mission: "Mission 2", 
+        question: "Who will help Lubnah with her math homework?",
+        options: ["Pikachu Salaam", "Pikachu Leilah", "ChatGPT"],
+        correct: 1,
+        feedback: "✔️ Correct! You're the Math Pikachu Pro, Mummy Lubnah, and Lubnah will be lucky to have you!",
+        photo: "./math.jpg",
+        caption: "Our brilliant Math Pikachu ready to help! 📚⚡",
+        wrongFeedback: "Come on! We both know you're the math genius here! 🧙‍♀️"
+    },
+    {
+        mission: "Mission 3",
+        question: "Who almost drowned at BSK swimming pool?",
+        options: ["Pikachu Salaam", "Pikachu Leilah", "The Lifeguard"],
+        correct: 1,
+        feedback: "🤣 Correct! That moment will go down in Pikachu history, Mummy Lubnah!",
+        photo: "./pool.jpg",
+        caption: "The legendary BSK swimming pool adventure! 🏊‍♀️😅",
+        wrongFeedback: "Really? We both know who the pool adventure star was! 😂💦"
+    },
+    {
+        mission: "Mission 4",
+        question: "Who is the one and only Kagujje? 👑💕",
+        options: ["Pikachu Leilah", "Pikachu Salaam", "Both are Kagujjes"],
+        correct: 1,
+        feedback: "💖 Absolutely right! Salaam is THE Kagujje - your king, your heart, your everything! The one who loves you beyond words and dreams of forever with his beautiful Pikachu! 👑✨",
+        photo: "./laughter.jpg",
+        caption: "The Kagujje who adores his Pikachu Queen! 👑💕",
+        wrongFeedback: "My love, there's only ONE Kagujje in this world, and he's completely crazy about you! 😘👑"
+    }
+];
+
+// Game state
+let currentMission = 0;
+let completedMissions = 0;
+
+// DOM elements
+let screens = {};
+let elements = {};
+
+// Global audio context
+let globalAudioContext = null;
+
+// Initialize audio context
+function initAudioContext() {
+    if (!globalAudioContext) {
+        try {
+            globalAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            console.log('Audio context initialized');
+        } catch (error) {
+            console.log('Audio context initialization failed:', error);
+        }
+    }
+    
+    if (globalAudioContext && globalAudioContext.state === 'suspended') {
+        globalAudioContext.resume().then(() => {
+            console.log('Audio context resumed');
+        });
+    }
+}
+
+// Play click sound
+function playClickSound() {
+    try {
+        if (!globalAudioContext) initAudioContext();
+        if (!globalAudioContext || globalAudioContext.state !== 'running') return;
+        
+        const oscillator = globalAudioContext.createOscillator();
+        const gainNode = globalAudioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(globalAudioContext.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.1, globalAudioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, globalAudioContext.currentTime + 0.1);
+        
+        oscillator.start(globalAudioContext.currentTime);
+        oscillator.stop(globalAudioContext.currentTime + 0.1);
+    } catch (error) {
+        console.log('Click sound failed:', error);
+    }
+}
+
+// Initialize the app
+function init() {
+    console.log('Initializing app...');
+    
+    // Initialize DOM elements
+    screens = {
+        welcome: document.getElementById('welcome-screen'),
+        quiz: document.getElementById('quiz-screen'),
+        letter: document.getElementById('letter-screen'),
+        hug: document.getElementById('hug-screen')
+    };
+
+    elements = {
+        startBtn: document.getElementById('start-btn'),
+        missionTitle: document.getElementById('mission-title'),
+        questionText: document.getElementById('question-text'),
+        optionsContainer: document.getElementById('options-container'),
+        feedback: document.getElementById('feedback'),
+        nextBtn: document.getElementById('next-btn'),
+        progressFill: document.querySelector('.progress-fill'),
+        keys: document.querySelectorAll('.key'),
+        playMusicBtn: document.getElementById('play-music'),
+        backgroundMusic: document.getElementById('background-music'),
+        hugBtn: document.getElementById('hug-btn'),
+        giggleSound: document.getElementById('giggle-sound'),
+        restartBtn: document.getElementById('restart-btn')
+    };
+    
+    console.log('Elements initialized:', {
+        startBtn: !!elements.startBtn,
+        missionTitle: !!elements.missionTitle,
+        questionText: !!elements.questionText,
+        optionsContainer: !!elements.optionsContainer,
+        feedback: !!elements.feedback,
+        nextBtn: !!elements.nextBtn,
+        keys: elements.keys ? elements.keys.length : 0
+    });
+    
+    // Add event listeners
+    if (elements.startBtn) elements.startBtn.addEventListener('click', startQuiz);
+    if (elements.nextBtn) elements.nextBtn.addEventListener('click', nextMission);
+    if (elements.playMusicBtn) elements.playMusicBtn.addEventListener('click', toggleMusic);
+    if (elements.hugBtn) elements.hugBtn.addEventListener('click', showHugScreen);
+    if (elements.restartBtn) elements.restartBtn.addEventListener('click', restartExperience);
+    
+    // Initialize 3D tilt effects
+    initTiltEffects();
+}
+
+// 3D Tilt Effect Function
+function initTiltEffects() {
+    const tiltCards = document.querySelectorAll('.tilt-card');
+    
+    tiltCards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = (y - centerY) / centerY * -10;
+            const rotateY = (x - centerX) / centerX * 10;
+            
+            card.style.setProperty('--rotate-x', `${rotateX}deg`);
+            card.style.setProperty('--rotate-y', `${rotateY}deg`);
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.setProperty('--rotate-x', '0deg');
+            card.style.setProperty('--rotate-y', '0deg');
+        });
+    });
+}
+
+// Screen transition function
+function showScreen(screenName) {
+    console.log('Showing screen:', screenName);
+    Object.values(screens).forEach(screen => {
+        if (screen) screen.classList.remove('active');
+    });
+    
+    if (screens[screenName]) {
+        screens[screenName].classList.add('active');
+    }
+}
+
+// Start the quiz
+function startQuiz() {
+    console.log('Starting quiz');
+    showScreen('quiz');
+}
+
+// Load current mission
+function loadMission() {
+    console.log('Loading mission:', currentMission, 'Total missions:', quizData.length);
+    
+    if (currentMission >= quizData.length) {
+        console.log('All missions completed, showing letter');
+        showScreen('letter');
+        return;
+    }
+    
+    const mission = quizData[currentMission];
+    console.log('Mission data:', mission);
+    
+    if (!elements.missionTitle || !elements.questionText || !elements.optionsContainer) {
+        console.error('Required elements not found');
+        return;
+    }
+    
+    elements.missionTitle.textContent = mission.mission;
+    elements.questionText.textContent = mission.question;
+    
+    // Update memory photo with error handling
+    const memoryImg = document.getElementById('memory-img');
+    const photoCaption = document.getElementById('photo-caption');
+    
+    if (memoryImg && photoCaption) {
+        memoryImg.onerror = function() {
+            const fallbackPhotos = {
+                'laughter.jpg': 'https://via.placeholder.com/300x200/FFD3E1/2D5A3D?text=Mummy+Lubnah+Laughing+💚',
+                'math.jpg': 'https://via.placeholder.com/300x200/A8E6CF/D63384?text=Math+Pikachu+Pro+⚡',
+                'pool.jpg': 'https://via.placeholder.com/300x200/87CEEB/FF6B9D?text=BSK+Pool+Memory+🏊‍♀️'
+            };
+            const photoName = mission.photo.split('./')[1];
+            this.src = fallbackPhotos[photoName] || 'https://via.placeholder.com/300x200/FFD3E1/A8E6CF?text=Beautiful+Memory+💚';
+        };
+        
+        memoryImg.src = mission.photo;
+        photoCaption.textContent = mission.caption;
+    }
+    
+    // Create option buttons
+    elements.optionsContainer.innerHTML = '';
+    mission.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.className = 'option-btn tilt-card';
+        button.textContent = option;
+        button.addEventListener('click', () => selectOption(index));
+        elements.optionsContainer.appendChild(button);
+    });
+    
+    // Reset feedback and next button
+    if (elements.feedback) elements.feedback.classList.remove('show');
+    if (elements.nextBtn) elements.nextBtn.style.display = 'none';
+    
+    // Re-initialize tilt effects for new elements
+    setTimeout(() => initTiltEffects(), 100);
+}
+
+// Handle option selection
+function selectOption(selectedIndex) {
+    console.log('selectOption called with index:', selectedIndex, 'current mission:', currentMission);
+    const mission = quizData[currentMission];
+    const buttons = document.querySelectorAll('.option-btn');
+    
+    // Disable all buttons
+    buttons.forEach(btn => btn.style.pointerEvents = 'none');
+    
+    if (selectedIndex === mission.correct) {
+        console.log('Correct answer selected!');
+        // Correct answer
+        buttons[selectedIndex].classList.add('correct');
+        if (elements.feedback) {
+            elements.feedback.textContent = mission.feedback;
+            elements.feedback.classList.add('show');
+            
+            // Scroll feedback into view for mobile
+            setTimeout(() => {
+                elements.feedback.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center',
+                    inline: 'nearest'
+                });
+            }, 100);
+        }
+        
+        // Unlock key animation
+        if (elements.keys[currentMission]) {
+            elements.keys[currentMission].classList.add('unlocked');
+        }
+        completedMissions++;
+        console.log('Completed missions:', completedMissions);
+        
+        // Show next button or finish
+        setTimeout(() => {
+            if (elements.nextBtn) {
+                elements.nextBtn.style.display = 'block';
+                
+                // Clear any existing onclick handlers
+                elements.nextBtn.onclick = null;
+                
+                if (currentMission < quizData.length - 1) {
+                    console.log('Setting up next mission button for mission:', currentMission + 1);
+                    elements.nextBtn.textContent = 'Next Mission ➡️';
+                    elements.nextBtn.onclick = function(e) {
+                        e.preventDefault();
+                        console.log('Next button clicked, moving from mission', currentMission, 'to', currentMission + 1);
+                        nextMission();
+                    };
+                } else {
+                    console.log('All missions completed, setting up letter button');
+                    elements.nextBtn.textContent = 'Open Your Love Letter 💌';
+                    elements.nextBtn.onclick = function(e) {
+                        e.preventDefault();
+                        showScreen('letter');
+                    };
+                }
+                
+                // Scroll next button into view for mobile
+                setTimeout(() => {
+                    elements.nextBtn.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center',
+                        inline: 'nearest'
+                    });
+                }, 200);
+            }
+        }, 2500);
+    } else {
+        // Incorrect answer
+        buttons[selectedIndex].classList.add('incorrect');
+        if (elements.feedback) {
+            elements.feedback.textContent = mission.wrongFeedback || "Nice try, my beautiful Pikachu! But we both know the real answer! 😘💚";
+            elements.feedback.classList.add('show');
+            
+            // Scroll feedback into view for mobile
+            setTimeout(() => {
+                elements.feedback.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center',
+                    inline: 'nearest'
+                });
+            }, 100);
+        }
+        
+        // Reset after 3 seconds
+        setTimeout(() => {
+            buttons.forEach(btn => {
+                btn.style.pointerEvents = 'auto';
+                btn.classList.remove('incorrect');
+            });
+            if (elements.feedback) elements.feedback.classList.remove('show');
+        }, 3000);
+    }
+}
+
+// Move to next mission
+function nextMission() {
+    console.log('nextMission called, current mission:', currentMission);
+    
+    // Hide the next button immediately to prevent double clicks
+    if (elements.nextBtn) {
+        elements.nextBtn.style.display = 'none';
+        elements.nextBtn.onclick = null;
+    }
+    
+    if (currentMission < quizData.length - 1) {
+        currentMission++;
+        console.log('Successfully moved to mission:', currentMission);
+        
+        // Small delay to ensure state is updated
+        setTimeout(() => {
+            loadMission();
+        }, 100);
+    } else {
+        console.log('All missions completed, showing letter');
+        showScreen('letter');
+    }
+}
+
+// Toggle background music
+function toggleMusic() {
+    console.log('toggleMusic called');
+    const vinylRecord = document.querySelector('.vinyl-record');
+    
+    if (!elements.backgroundMusic) {
+        console.log('Background music element not found');
+        // Try to find it again
+        elements.backgroundMusic = document.getElementById('background-music');
+        if (!elements.backgroundMusic) {
+            console.log('Still no background music element found');
+            return;
+        }
+    }
+    
+    console.log('Music element found, current paused state:', elements.backgroundMusic.paused);
+    
+    if (elements.backgroundMusic.paused) {
+        // Initialize audio context for mobile
+        if (!globalAudioContext) {
+            initAudioContext();
+        }
+        
+        console.log('Attempting to play music...');
+        elements.backgroundMusic.volume = 0.3;
+        
+        const playPromise = elements.backgroundMusic.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                console.log('Music started successfully');
+                if (elements.playMusicBtn) {
+                    elements.playMusicBtn.textContent = '🎵 Now Playing: "Ordinary" by Alex Warren';
+                    elements.playMusicBtn.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+                }
+                if (vinylRecord) vinylRecord.style.animationPlayState = 'running';
+            }).catch(e => {
+                console.log('Music play failed:', e);
+                if (elements.playMusicBtn) {
+                    elements.playMusicBtn.textContent = '🎵 Click to enable music 🎵';
+                    elements.playMusicBtn.style.background = 'linear-gradient(135deg, #dc3545, #c82333)';
+                }
+                // Try alternative approach for mobile
+                setTimeout(() => {
+                    try {
+                        elements.backgroundMusic.play();
+                    } catch (err) {
+                        console.log('Alternative play attempt failed:', err);
+                    }
+                }, 100);
+            });
+        }
+    } else {
+        console.log('Pausing music...');
+        elements.backgroundMusic.pause();
+        if (elements.playMusicBtn) {
+            elements.playMusicBtn.textContent = '🎵 Play "Ordinary" by Alex Warren 🎵';
+            elements.playMusicBtn.style.background = 'linear-gradient(135deg, #ff6b9d, #a8e6cf)';
+        }
+        if (vinylRecord) vinylRecord.style.animationPlayState = 'paused';
+    }
+}
+
+// Show hug screen
+function showHugScreen() {
+    showScreen('hug');
+}
+
+// Restart the entire experience
+function restartExperience() {
+    currentMission = 0;
+    completedMissions = 0;
+    
+    // Reset all keys
+    if (elements.keys) {
+        elements.keys.forEach(key => key.classList.remove('unlocked'));
+    }
+    
+    // Reset progress
+    if (elements.progressFill) elements.progressFill.style.width = '0%';
+    
+    // Go back to welcome screen
+    showScreen('welcome');
+}
+
+// Function to start music automatically
+function startMusicAutomatically() {
+    console.log('Attempting to start music automatically...');
+    
+    if (elements.backgroundMusic) {
+        elements.backgroundMusic.volume = 0.3;
+        
+        const playPromise = elements.backgroundMusic.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                console.log('Music started automatically!');
+                if (elements.playMusicBtn) {
+                    elements.playMusicBtn.textContent = '🎵 Now Playing: "Ordinary" by Alex Warren';
+                    elements.playMusicBtn.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+                }
+                const vinylRecord = document.querySelector('.vinyl-record');
+                if (vinylRecord) vinylRecord.style.animationPlayState = 'running';
+            }).catch(e => {
+                console.log('Autoplay prevented by browser:', e);
+                if (elements.playMusicBtn) {
+                    elements.playMusicBtn.textContent = '🎵 Click to play "Ordinary" by Alex Warren 🎵';
+                    elements.playMusicBtn.style.background = 'linear-gradient(135deg, #ff6b9d, #a8e6cf)';
+                }
+                
+                // Try to start music on first user interaction
+                const startOnInteraction = () => {
+                    console.log('Starting music on user interaction...');
+                    elements.backgroundMusic.play().then(() => {
+                        console.log('Music started on user interaction!');
+                        if (elements.playMusicBtn) {
+                            elements.playMusicBtn.textContent = '🎵 Now Playing: "Ordinary" by Alex Warren';
+                            elements.playMusicBtn.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+                        }
+                        const vinylRecord = document.querySelector('.vinyl-record');
+                        if (vinylRecord) vinylRecord.style.animationPlayState = 'running';
+                    }).catch(err => {
+                        console.log('Failed to start music on interaction:', err);
+                    });
+                    
+                    // Remove the event listeners after first interaction
+                    document.removeEventListener('click', startOnInteraction);
+                    document.removeEventListener('touchstart', startOnInteraction);
+                    document.removeEventListener('keydown', startOnInteraction);
+                };
+                
+                // Add event listeners for first user interaction
+                document.addEventListener('click', startOnInteraction, { once: true });
+                document.addEventListener('touchstart', startOnInteraction, { once: true });
+                document.addEventListener('keydown', startOnInteraction, { once: true });
+            });
+        }
+    }
+}
+
+// Initialize the app when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing app...');
+    init();
+    
+    // Start with mission 0
+    currentMission = 0;
+    completedMissions = 0;
+    
+    console.log('Total quiz data length:', quizData.length);
+    console.log('Loading mission:', currentMission);
+    
+    loadMission();
+    
+    // Try to start music automatically after a short delay
+    setTimeout(() => {
+        startMusicAutomatically();
+    }, 1000);
+    
+    // Initialize audio on user interaction
+    let audioInitialized = false;
+    const initAudio = () => {
+        if (!audioInitialized) {
+            initAudioContext();
+            audioInitialized = true;
+            console.log('Audio initialized on user interaction');
+        }
+    };
+    
+    // Add click sounds to all buttons
+    document.addEventListener('click', (e) => {
+        initAudio();
+        if (e.target.tagName === 'BUTTON') {
+            setTimeout(() => playClickSound(), 100);
+        }
+    });
+    
+    // Also add touch events for mobile
+    document.addEventListener('touchstart', (e) => {
+        initAudio();
+        if (e.target.tagName === 'BUTTON') {
+            setTimeout(() => playClickSound(), 100);
+        }
+    });
+    
+    // Setup background music
+    if (elements.backgroundMusic) {
+        elements.backgroundMusic.volume = 0.3;
+        elements.backgroundMusic.loop = true;
+        
+        // Add error handling for missing audio files
+        elements.backgroundMusic.addEventListener('error', function(e) {
+            console.log('Audio file error:', e);
+            if (elements.playMusicBtn) {
+                elements.playMusicBtn.textContent = '🎵 Music file not found 🎵';
+                elements.playMusicBtn.style.background = 'linear-gradient(135deg, #ffc107, #fd7e14)';
+            }
+        });
+        
+        // Add load event
+        elements.backgroundMusic.addEventListener('canplaythrough', function() {
+            console.log('Audio file loaded successfully');
+            if (elements.playMusicBtn) {
+                elements.playMusicBtn.textContent = '🎵 Play "Ordinary" by Alex Warren 🎵';
+            }
+        });
+        
+        console.log('Music setup complete');
+    } else {
+        console.log('Background music element not found');
+        // Try to find it again
+        setTimeout(() => {
+            elements.backgroundMusic = document.getElementById('background-music');
+            if (elements.backgroundMusic) {
+                console.log('Found background music element on retry');
+                elements.backgroundMusic.volume = 0.3;
+                elements.backgroundMusic.loop = true;
+            }
+        }, 500);
+    }
+});
+
+console.log('🎉 Script fully loaded and ready!');
+    </script>
 </body>
 </html>
